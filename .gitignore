@@ -18,6 +18,8 @@ yarn-error.log*
 .nyc_output/
 auth-state.json
 /.auth/
+/test-results/
+/screenshots/
 
 # Environment variables
 .env
