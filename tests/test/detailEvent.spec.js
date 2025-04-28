@@ -1,17 +1,21 @@
 const { test, expect } = require('../fixtures/eventFixtures');
+const { login } = require('../auth/login'); // Import the login function
 const path = require('path');
 
 const screenshotsDir = path.join(__dirname, '../../screenshots');
 let savedEventUrl = null;
 
 test.describe.serial('Detail Event UI', () => {
-  // Manual context creation in beforeAll
   test.beforeAll(async ({ browser }) => {
     console.log('Setting up event URL in beforeAll');
-    const context = await browser.newContext({ storageState: path.join(__dirname, '../../auth/user-auth.json') });
+    const context = await browser.newContext(); // Create a new context without loading storage state
     const page = await context.newPage();
 
     try {
+      // Perform login explicitly
+      await login(page, context);
+
+      // After login, navigate to the events page
       await page.goto('https://app.livesharenow.com/events', { timeout: 30000 });
       await page.waitForTimeout(2000);
       const eventCard = page.locator('.flex.pt-8, div.event-card, div.mat-card').first();
@@ -29,7 +33,6 @@ test.describe.serial('Detail Event UI', () => {
     }
   });
 
-  // Ensure each test starts on the event page
   test.beforeEach(async ({ page }) => {
     if (!savedEventUrl) {
       throw new Error('savedEventUrl is not set. Ensure beforeAll ran successfully.');
